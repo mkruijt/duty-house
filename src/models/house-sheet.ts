@@ -29,58 +29,6 @@ export class HouseSpreadsheet {
         public users: [] = [],
     ) { }
 
-    public load() {
-        return new Promise((resolve, reject) => {
-            gapi.client.sheets.spreadsheets.values.batchGet({
-                spreadsheetId: this.id,
-                ranges: [
-                    `${SHEET_VIEWS.USERS}!A2:K`,
-                    `${SHEET_VIEWS.TASKS}!A2:K`,
-                    `${SHEET_VIEWS.LOG}!A2:K`,
-                ],
-            }).then((response) => {
-                const range = response.result;
-                if (range.valueRanges.length > 0) {
-                    this.users = range?.valueRanges[0]?.values || [];
-                    this.tasks = range?.valueRanges[1]?.values || [];
-                    this.activities = range?.valueRanges[2]?.values || [];
-                    resolve();
-                    return;
-                }
-                reject('No data found.');
-            }, (response) => reject('Error: ' + response.result.error.message));
-        });
-    }
-
-    public saveSettings() {
-        return new Promise((resolve, reject) => {
-            gapi.client.sheets.spreadsheets.values.batchClear({
-                spreadsheetId: this.id,
-                ranges: [
-                    `${SHEET_VIEWS.USERS}!A2:K`,
-                    `${SHEET_VIEWS.TASKS}!A2:K`,
-                ]
-            }).then(() => {
-                gapi.client.sheets.spreadsheets.values.batchUpdate({
-                    spreadsheetId: this.id,
-                    valueInputOption: 'USER_ENTERED',
-                    data: [
-                        {
-                            range: `${SHEET_VIEWS.USERS}!A2:K`,
-                            values: this.users
-                        },
-                        {
-                            range: `${SHEET_VIEWS.TASKS}!A2:K`,
-                            values: this.tasks
-                        },
-                    ],
-                }).then(function(response) {
-                    resolve(response);
-                }, (response) => reject('Error: ' + response.result.error.message));
-            }, err => reject(err));
-        });
-    }
-
     public getActivitiesFromTo(fromDay: Date, toDay: Date) {
         return this.activities.filter(a => {
             const d = new Date(a[0]);
@@ -209,4 +157,65 @@ export class HouseSpreadsheet {
         });
     }
 
+    public load() {
+        return new Promise((resolve, reject) => {
+            gapi.client.sheets.spreadsheets.values.batchGet({
+                spreadsheetId: this.id,
+                ranges: [
+                    `${SHEET_VIEWS.USERS}!A2:K`,
+                    `${SHEET_VIEWS.TASKS}!A2:K`,
+                    `${SHEET_VIEWS.LOG}!A2:K`,
+                ],
+            }).then((response) => {
+                const range = response.result;
+                if (range.valueRanges.length > 0) {
+                    this.users = range?.valueRanges[0]?.values || [];
+                    this.tasks = range?.valueRanges[1]?.values || [];
+                    this.activities = range?.valueRanges[2]?.values || [];
+                    resolve();
+                    return;
+                }
+                reject('No data found.');
+            }, (response) => reject('Error: ' + response.result.error.message));
+        });
+    }
+
+    public saveSettings() {
+        return new Promise((resolve, reject) => {
+            gapi.client.sheets.spreadsheets.values.batchClear({
+                spreadsheetId: this.id,
+                ranges: [
+                    `${SHEET_VIEWS.USERS}!A2:K`,
+                    `${SHEET_VIEWS.TASKS}!A2:K`,
+                ]
+            }).then(() => {
+                gapi.client.sheets.spreadsheets.values.batchUpdate({
+                    spreadsheetId: this.id,
+                    valueInputOption: 'USER_ENTERED',
+                    data: [
+                        {
+                            range: `${SHEET_VIEWS.USERS}!A2:K`,
+                            values: this.users
+                        },
+                        {
+                            range: `${SHEET_VIEWS.TASKS}!A2:K`,
+                            values: this.tasks
+                        },
+                    ],
+                }).then(function(response) {
+                    resolve(response);
+                }, (response) => reject('Error: ' + response.result.error.message));
+            }, err => reject(err));
+        });
+    }
+
+}
+
+export class DemoHouseSpreadsheet extends HouseSpreadsheet {
+    public appendActivity() {
+        return Promise.resolve()
+    }
+    public saveSettings() {
+        return Promise.resolve()
+    }
 }

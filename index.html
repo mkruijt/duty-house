@@ -8,10 +8,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body class="home">
-        <div>
-            <h1 class="logo">🏠<br/><b>duty</b>.house</h1>
-            <h2 class="motto">Leadboard made simple</h2>
+        <div class="header">
+            <a href="/">
+                <h1 class="logo">🏠<br/><b>duty</b>.house</h1>
+                <h2 class="motto">Leadboard made simple</h2>
+            </a>
         </div>
+        <div id="app"></div>
         <div class="landing">
             <div class="content">
                 <h1>🎁 <span>Duty</span>, the fun way!</h1>
@@ -23,7 +26,7 @@
                     Is important to <b>get things done</b>, but what about <b>rewards</b>?
                 </p>
                 <div class="control-group">
-                    <a class="btn red" href="/app.html">
+                    <a class="btn red" href="#app">
                         Start the fun!
                     </a>
                 </div>
@@ -84,6 +87,7 @@
                 Made with ❤️
             </div>
         </div>
-        <script src="./src/landing.tsx"></script>
+        <script src="https://apis.google.com/js/api.js"></script>
+        <script src="./src/house.tsx"></script>
     </body>
 </html>

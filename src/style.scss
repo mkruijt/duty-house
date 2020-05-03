@@ -14,10 +14,49 @@ body {
         font-size: 1.625em;
     }
     font-family: Helvetica, sans-serif;
+    transition: all ease-in-out .5s;
 
     &.home {
         background: linear-gradient(to bottom, #fff, #B9ACCA, #fff);
+        #app {
+            font-size: .825em;
+            transform: translateY(-3em);
+            text-align: center;
+            margin-bottom: 20vh;
+        }
     }
+
+    &.app {
+        background: linear-gradient(to bottom, #fff, #f0f0f0, #fff);
+
+        .header {
+            font-size: .825em;
+            margin-bottom: 1.25em;
+
+            .motto {
+                display: none;
+            }
+        }
+
+        .footer {
+            display: none;
+        }
+
+        .landing {
+            display: none;
+        }
+    }
+}
+
+.header {
+    transition: all ease-in-out .5s;
+    a {
+        text-decoration: none;
+    }
+}
+
+.check-the-demo {
+    font-size: .625em;
 }
 
 .motto {
@@ -196,14 +235,14 @@ h1, h2, h3, h4, h5, h6 {
         box-shadow: none;
     }
 
-    &:nth-child(even) {
+    &:nth-child(odd) {
         &::before {
             transform: skewY(-6deg);
             background: rgb(26, 146, 145);
         }
     }
 
-    &--cloud:nth-child(even)::before {
+    &--cloud:nth-child(odd)::before {
         transform: none;
         background: #fff;
     }
@@ -219,13 +258,13 @@ h1, h2, h3, h4, h5, h6 {
             transform: translateY(-5em);
         }
 
-        &:nth-child(even) {
+        &:nth-child(odd) {
             .content {
                 transform: translateX(-10em) translateY(-10.5em);
             }
         }
 
-        &--cloud:nth-child(odd) .content {
+        &--cloud:nth-child(even) .content {
             transform: translateY(-5em);
         }
     }

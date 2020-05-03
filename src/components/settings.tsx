@@ -129,7 +129,7 @@ const SettingReduce = (state: ISettingState, action: SettingAction): ISettingSta
 
 export const SettingsComponent = (props: { sheet: HouseSpreadsheet, onCancel: () => {}, onSaved: () => {} }) => {
 
-    const [state, dispatch] = React.useReducer(SettingReduce, { view: SETTINGS_VIEW.ME, sheet: props.sheet });
+    const [state, dispatch] = React.useReducer(SettingReduce, { view: SETTINGS_VIEW.USERS, sheet: props.sheet });
 
     return <div className="settings__form">
 
@@ -142,7 +142,6 @@ export const SettingsComponent = (props: { sheet: HouseSpreadsheet, onCancel: ()
         </h3>
 
         <RadioControlComponent name="time-view" options={[
-            { name: 'Me', value: SETTINGS_VIEW.ME },
             { name: 'Participants', value: SETTINGS_VIEW.USERS },
             { name: 'Tasks', value: SETTINGS_VIEW.TASKS },
         ]} currentValue={state.view} onChange={(view: typeof SETTINGS_VIEW) => dispatch({ type: SETTING_ACTION.CHANGE_VIEW, view })} />
