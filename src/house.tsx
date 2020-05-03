@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { render } from "react-dom";
 import { AppContextProvider, AppContext } from './providers/spreadsheet';
-import { GoogleDriveProvider } from './providers/drive';
 import config from '../../packages/google-sheet-config.json';
 import { SheetView } from './components/sheet-view';
 import { caseSwitch } from './utils';
@@ -30,33 +29,25 @@ const CONFIG = {
     discoveryDocs: DISCOVERY_DOCS,
 };
 
-const InitialScreenComponent = () => {
-    const { state, dispatch } = React.useContext(AppContext);
-    return !!state.sheet.id ? <SheetView sheet={state.sheet} isSignedIn={state.isSignedIn} addItem={(item) => dispatch({ type: 'add-item', item })} /> : null;
-}
-
 const App = () => {
-    const [sheetId, dispatchSheetId] = React.useState(null);
+    const { state, dispatch } = React.useContext(AppContext);
 
     React.useEffect(() => {
-        const params = (new URL(document.location)).searchParams;
-        const name = params.get("sheet");
+    }, []);
 
-        if (!sheetId && name) {
-            dispatchSheetId(name);
-        }
-    }, [])
-
-
-    return <AppContextProvider apiKey={CONFIG.apiKey} clientId={CONFIG.clientId} scope={CONFIG.scope} discoveryDocs={CONFIG.discoveryDocs} spreadsheetId={sheetId}  >
-        <InitialScreenComponent />
-    </AppContextProvider>;
+    return !!state.sheet.id
+        ? <SheetView sheet={state.sheet} isSignedIn={state.isSignedIn} addItem={(item) => dispatch({ type: 'add-item', item })} />
+        : null;
 };
 
 const start = () => {
+    const params = (new URL(document.location)).searchParams;
+    const id = params.get("sheet");
 
     render((
-        <App />
+        <AppContextProvider apiKey={CONFIG.apiKey} clientId={CONFIG.clientId} scope={CONFIG.scope} discoveryDocs={CONFIG.discoveryDocs} spreadsheetId={id || null}>
+            <App />
+        </AppContextProvider>
     ), document.querySelector('#app'));
 
 }
