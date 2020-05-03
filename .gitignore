@@ -1,0 +1,8 @@
+node_modules
+.parcel-cache
+*.log
+.cache
+dist
+www/exported
+.env
+.env.enc

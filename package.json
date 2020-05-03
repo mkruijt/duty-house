@@ -1,0 +1,21 @@
+{
+  "name": "house",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^1.12.4"
+  },
+  "dependencies": {
+    "@ideabile/util-google-auth": "^1.0.0",
+    "@types/gapi": "0.0.39",
+    "date-fns": "^2.12.0",
+    "googleapis": "^49.0.0"
+  }
+}

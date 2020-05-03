@@ -1,0 +1,12 @@
+
+* The user flow
+- TODO: The user enter and can already see a demo of existing sheet
+- TODO: The user decide to login, we can then search for an existing SheetID
+- TODO: If SheetID is not present we can copy our template https://developers.google.com/drive/api/v3/reference/files/copy
+- TODO: If the user just create a template ask some questions
+- TODO: Create view to create users
+- TODO: Create view to create tasks types
+- TODO: If template is present show the Week Leader Board
+- TODO: Create Month Leader Board
+- TODO: Create Day Leader Board
+- TODO: Create Year Leader Board
