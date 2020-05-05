@@ -14,15 +14,19 @@ body {
         font-size: 1.625em;
     }
     font-family: Helvetica, sans-serif;
-    transition: all ease-in-out .5s;
 
     &.home {
         background: linear-gradient(to bottom, #fff, #B9ACCA, #fff);
         #app {
-            font-size: .825em;
-            transform: translateY(-3em);
             text-align: center;
             margin-bottom: 20vh;
+        }
+
+        @media(min-width:60em) {
+            #app {
+                font-size: .825em;
+                transform: translateY(-3em);
+            }
         }
     }
 

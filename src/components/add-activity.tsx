@@ -16,10 +16,10 @@ export const AddActivityFormComponent = ({ sheet: { users, tasks }, onCancel, on
     return <div className="activity__form">
         <h2>Which <span>activity</span> happen?</h2>
         <select ref={user}>
-            {users.map(u => <option key={u[0]} defaultValue={u[0]}>{u[0]} {u[1]}</option>)}
+            {users.map(u => <option key={u[0]} value={u[0]}>{u[0]} {u[1]}</option>)}
         </select>
         <select ref={task}>
-            {tasks.map(u => <option key={u[0]} defaultValue={u[0]}>{u[0]} {u[1]}</option>)}
+            {tasks.map(u => <option key={u[0]} value={u[0]}>{u[0]} {u[1]}</option>)}
         </select>
         <input ref={when} type="datetime-local" defaultValue={new Date().toISOString().substring(0, 16)} />
         <div>
