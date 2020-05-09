@@ -14,7 +14,6 @@ export const ActivityListComponent = ({ sheet: { activities } }: { sheet: HouseS
         </thead>
         <tbody>
             {activities.map((u, i) => {
-                const user = u[0].toLowerCase();
                 return <tr>
                     <td>{formatDistance(new Date(u[0]), new Date()}</td>
                     <td>{u[1]}</td>

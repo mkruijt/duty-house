@@ -3,62 +3,75 @@ import config from '../../../packages/google-sheet-config.json';
 import { HouseSpreadsheet, DemoHouseSpreadsheet } from '../models/house-sheet';
 import { GoogleDriveProvider, GoogleDriveContext } from './drive';
 import { subDays, subHours } from 'date-fns';
-
+import { demoSheet } from '../demo';
+import { caseSwitch } from '../utils';
 
 export const AppContext = React.createContext();
 
+export enum APP_VIEWS {
+    INITIAL,
+    LOADING,
+    SELECT_DOCUMENT,
+    LOGIN,
+}
 
-const getRand = (m) => Math.floor(Math.random() * m);
-const randomColor = () => [getRand(255), getRand(255), getRand(255)].join(',');
+export enum APP_ACTIONS {
+    CLIENT_INIT,
+    SET_ID,
+    LOADING,
+    LOADED,
+    CLIENT_LOADED,
+    RESET,
+    LOGIN_CHANGE,
+    SET_USERS,
+    SET_TASKS,
+    SET_ITEMS,
+    ADD_ITEMS,
+}
+
 
 const AppActionReduce = (state, action) => {
     switch (action.type) {
-        case "set-id":
+        case APP_ACTIONS.SET_ID:
             if (action.id === 'DEMO') {
-                const users = [
-                    ['Mauro', '🎅', `rgb(${randomColor()})`],
-                    ['Maartje', '🎅', `rgb(${randomColor()})`],
-                    ['Matteo', '🎅', `rgb(${randomColor()})`],
-                ];
-                const tasks = [
-                    ['Coffee', '1', '☕️'],
-                    ['Dinner', '3', '🍳'],
-                ];
-                const activities = [...new Array(getRand(200)].map((e, i) => {
-                    return [
-                        subHours(new Date(), i * 3),
-                        tasks[getRand(tasks.length)][0],
-                        users[getRand(users.length)][0],
-                    ]
-                });
-                state.sheet = new DemoHouseSpreadsheet(
-                    action.id,
-                    activities,
-                    tasks,
-                    users,
-                );
+                state.sheet = demoSheet;
             } else {
                 state.sheet.id = action.id;
             }
+            const params = (new URL(document.location)).searchParams;
+            params.set("sheet", action.id);
+            window.history.pushState(state, 'Sheet View', `${document.location}?${params.toString()}`);
             return { ...state, sheet: state.sheet };
-        case "loading":
+
+        case APP_ACTIONS.CLIENT_INIT:
+        case APP_ACTIONS.LOADING:
             return { ...state, loading: true };
-        case "loaded":
+
+        case APP_ACTIONS.CLIENT_LOADED:
+            return { ...state, init: true };
+
+        case APP_ACTIONS.LOADED:
             return { ...state, loading: false };
-        case "reset":
+
+        case APP_ACTIONS.RESET:
             return initialState;
-        case "login-change":
+
+        case APP_ACTIONS.LOGIN_CHANGE:
             return { ...state, isSignedIn: action.isSignedIn };
-        case "set-users":
+
+        case APP_ACTIONS.SET_USERS:
             state.sheet.setUsers(action.users);
             return { ...state, sheet: state.sheet };
-        case "set-tasks":
+
+        case APP_ACTIONS.SET_TASKS:
             state.sheet.setTasks(action.tasks);
             return { ...state, sheet: state.sheet };
-        case "set-items":
+
+        case APP_ACTIONS.SET_ITEMS:
             state.sheet.setActivities(action.items);
             return { ...state, sheet: state.sheet, loading: false };
-        case "add-item":
+
+        case APP_ACTIONS.ADD_ITEMS:
             state.sheet.addActivity(action.item);
             return { ...state, sheet: state.sheet };
     }
@@ -74,6 +87,7 @@ export interface IAppContextProviderProps {
 }
 
 const InitialAppState = {
+    init: false,
     isLoaded: false,
     isSignedIn: false,
 };
@@ -87,39 +101,46 @@ export const AppContextProvider = ({ discoveryDocs, scope, apiKey, clientId, spr
         discoveryDocs,
     };
 
-    const [clientInit, clientInitDispatch] = React.useState(false);
     const [contentLoaded, contentLoadedDispatch] = React.useState(false);
     const [state, dispatch] = React.useReducer(AppActionReduce, {
         ...InitialAppState,
         sheet: new HouseSpreadsheet(spreadsheetId)
     });
 
-    const login = () => {
+    const initLogin = () => new Promise(resolve => {
+
+        dispatch({ type: APP_ACTIONS.LOADING });
         const authInstance = gapi.auth2.getAuthInstance();
-        authInstance.isSignedIn.listen((isSignedIn) => dispatch({ type: 'login-change', isSignedIn }));
-        dispatch({ type: 'login-change', isSignedIn: authInstance.isSignedIn.get() });
-        dispatch({ type: 'loaded' });
-    };
+        const isSignedIn = authInstance.isSignedIn.get();
+
+        authInstance.isSignedIn.listen((isSignedIn) => dispatch({ type: APP_ACTIONS.LOGIN_CHANGE, isSignedIn }));
+
+        if (isSignedIn) {
+            dispatch({ type: APP_ACTIONS.LOGIN_CHANGE, isSignedIn });
+        }
+
+        resolve();
+    });
 
     React.useEffect(() => {
-        if (!clientInit) {
+        if (!state.init && !state.loading) {
+            dispatch({ type: APP_ACTIONS.LOADING });
             gapi.client
                 .init(CONFIG)
-                .then(() => gapi.auth2.init(CONFIG).then())
-                .then(() => clientInitDispatch(true));
+                .then(() => new Promise(resolve => gapi.auth2.init(CONFIG).then(resolve)))
+                .then(initLogin)
+                .then(() => {
+                    dispatch({ type: APP_ACTIONS.CLIENT_LOADED })
+                    dispatch({ type: APP_ACTIONS.LOADED })
+                });
             return;
         }
 
-        if (clientInit && !state.isSignedIn && !state.loading) {
-            dispatch({ type: 'loading' });
-            login();
-        }
-
-        if (clientInit && !contentLoaded && !state.loading && !!state.sheet.id && state.sheet.id !== 'DEMO') {
-            dispatch({ type: 'loading' });
+        if (state.init && !contentLoaded && !state.loading && !!state.sheet.id && state.sheet.id !== 'DEMO') {
+            dispatch({ type: APP_ACTIONS.LOADING });
             state.sheet.load().then(() => {
                 contentLoadedDispatch(true);
-                dispatch({ type: 'loaded' });
+                dispatch({ type: APP_ACTIONS.LOADED });
             });
         }
 
@@ -128,7 +149,7 @@ export const AppContextProvider = ({ discoveryDocs, scope, apiKey, clientId, spr
             document.body.classList.add('app');
         }
 
-    }, [state.isSignedIn, clientInit, contentLoaded, state.sheet.id]);
+    }, [state.init, state.isSignedIn, state.loading, state.sheet.id, contentLoaded]);
     const LoginButton = () => <button className="btn blue" onClick={() => gapi.auth2.getAuthInstance().signIn()}>Login with Google</button>;
 
     let value = { state, dispatch };
@@ -136,7 +157,7 @@ export const AppContextProvider = ({ discoveryDocs, scope, apiKey, clientId, spr
     const refSpreadSheetId = React.createRef();
 
     const copyFileFrom = () => {
-        dispatch({ type: 'loading' });
+        dispatch({ type: APP_ACTIONS.LOADING });
         gapi.client.drive.files.copy({
             fileId: '1qzQNxMI71HeRX89aP5b9ZX_6XQKXy7_eKWpMwc5ckL0',
             properties: {
@@ -144,7 +165,7 @@ export const AppContextProvider = ({ discoveryDocs, scope, apiKey, clientId, spr
             }
         }).then(({ result }) => {
             state.sheet.id = result.id;
-            dispatch({ type: 'loaded' });
+            dispatch({ type: APP_ACTIONS.LOADED });
         })
     };
 
@@ -154,7 +175,7 @@ export const AppContextProvider = ({ discoveryDocs, scope, apiKey, clientId, spr
             return;
         }
 
-        dispatch({ type: 'set-id', id });
+        dispatch({ type: APP_ACTIONS.SET_ID, id });
     };
 
     const SelectFile = ({ files }) => {
@@ -167,32 +188,39 @@ export const AppContextProvider = ({ discoveryDocs, scope, apiKey, clientId, spr
             </select></>
     };
 
+    const BrowseFiles = () => !!state.isSignedIn
+        ? <GoogleDriveProvider>
+            <GoogleDriveContext.Consumer>
+                {({ state: { loaded, files } }) => {
+                    files = Array.from(files || []);
+                    if (loaded && files.length === 0) return <button className="btn blue" onClick={() => copyFileFrom()} >Create a new Duty Sheet</button>;
+                    return loaded ? <SelectFile files={files} /> : null;
+                }}
+            </GoogleDriveContext.Consumer>
+        </GoogleDriveProvider>
+        : <LoginButton />;
+
     return <AppContext.Provider value={value}>
         {
-            !!state.loading ? <Loading /> : null
+            state.loading ? <Loading /> : null
         }
-        {!!state.sheet.id ? children : <>
-            {!!state.isSignedIn
-                ?
-                <GoogleDriveProvider>
-                    <GoogleDriveContext.Consumer>
-                        {({ state: files }) => {
-                            files = Array.from(files || []);
-                            if (files.length === 0) return <button className="btn blue" onClick={() => copyFileFrom()} >Create a new Duty Sheet</button>;
-                            return <SelectFile files={files} />;
+        {state.sheet.id
+            ? children
+            : <>
+                {
+                    !state.loading
+                        ? <BrowseFiles />
+                        : null
+                }
+                <p className="check-the-demo">
+                    or<br /><a href="#"
+                        onClick={e => {
+                            e.preventDefault();
+                            dispatch({ type: APP_ACTIONS.SET_ID, id: 'DEMO' });
                         }}
-                    </GoogleDriveContext.Consumer>
-                </GoogleDriveProvider>
-                : <LoginButton />
-            }
-            <p className="check-the-demo">
-                or<br /><a href="#"
-                    onClick={e => {
-                        e.preventDefault();
-                        dispatch({ type: 'set-id', id: 'DEMO' });
-                    }}
-                >just check a demo</a>
-            </p>
-        </>}
+                    >just check a demo</a>
+                </p>
+            </>
+        }
     </AppContext.Provider>;
 };

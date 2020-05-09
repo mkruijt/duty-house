@@ -28,6 +28,10 @@ body {
                 transform: translateY(-3em);
             }
         }
+
+        .header {
+            margin-top: 2em;
+        }
     }
 
     &.app {
@@ -53,7 +57,6 @@ body {
 }
 
 .header {
-    transition: all ease-in-out .5s;
     a {
         text-decoration: none;
     }
