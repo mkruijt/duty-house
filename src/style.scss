@@ -139,7 +139,7 @@ select {
     background-position: right .7em top 50%, 0 0;
     background-size: .65em auto, 100%;
 
-    height: 1.825em;
+    height: 3em;
     @media(min-width: 40em) {
         height: 2.5em;
     }
@@ -159,6 +159,119 @@ select:focus {
 }
 select option {
     font-weight:normal;
+}
+
+input[type="date"] {
+    -webkit-align-items: center;
+    display: -webkit-inline-flex;
+    font-family: monospace;
+    overflow: hidden;
+    padding: 0;
+    -webkit-padding-start: 1px;
+}
+
+input::-webkit-datetime-edit {
+    -webkit-flex: 1;
+    -webkit-user-modify: read-only !important;
+    display: inline-block;
+    min-width: 0;
+    overflow: hidden;
+}
+input::-webkit-datetime-edit-fields-wrapper {
+    -webkit-user-modify: read-only !important;
+    display: inline-block;
+    padding: 1px 0;
+    white-space: pre;
+}
+
+/* If you update padding, border, or margin in the following ruleset, update
+   DateTimeFieldElement::maximumWidth too. */
+input::-webkit-datetime-edit-ampm-field,
+input::-webkit-datetime-edit-day-field,
+input::-webkit-datetime-edit-hour-field,
+input::-webkit-datetime-edit-millisecond-field,
+input::-webkit-datetime-edit-minute-field,
+input::-webkit-datetime-edit-month-field,
+input::-webkit-datetime-edit-second-field,
+input::-webkit-datetime-edit-week-field,
+input::-webkit-datetime-edit-year-field {
+    -webkit-user-modify: read-only !important;
+    border: none;
+    display: inline;
+    font: inherit !important;
+    padding: 1px;
+}
+
+/* Remove focus ring from fields and use highlight color */
+input::-webkit-datetime-edit-ampm-field:focus,
+input::-webkit-datetime-edit-day-field:focus,
+input::-webkit-datetime-edit-hour-field:focus,
+input::-webkit-datetime-edit-millisecond-field:focus,
+input::-webkit-datetime-edit-minute-field:focus,
+input::-webkit-datetime-edit-month-field:focus,
+input::-webkit-datetime-edit-second-field:focus,
+input::-webkit-datetime-edit-week-field:focus,
+input::-webkit-datetime-edit-year-field:focus {
+    background-color: highlight;
+    color: highlighttext;
+    outline: none;
+}
+
+input::-webkit-datetime-edit-year-field[disabled],
+input::-webkit-datetime-edit-month-field[disabled],
+input::-webkit-datetime-edit-week-field[disabled],
+input::-webkit-datetime-edit-day-field[disabled],
+input::-webkit-datetime-edit-ampm-field[disabled],
+input::-webkit-datetime-edit-hour-field[disabled],
+input::-webkit-datetime-edit-millisecond-field[disabled],
+input::-webkit-datetime-edit-minute-field[disabled],
+input::-webkit-datetime-edit-second-field[disabled] {
+    color: GrayText;
+}
+
+/* If you update padding, border, or margin in the following ruleset, update
+   DateTimeEditElement::customStyelForRenderer too. */
+input::-webkit-datetime-edit-text {
+    -webkit-user-modify: read-only !important;
+    display: inline;
+    font: inherit !important;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="datetime"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="month"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-inner-spin-button,
+input[type="week"]::-webkit-inner-spin-button {
+    display: inline-block;
+    position: static;
+    -webkit-margin-start: 2px;
+}
+
+input::-webkit-inner-spin-button {
+    -webkit-appearance: inner-spin-button;
+    display: block;
+    position: relative;
+    cursor: default;
+    /* This height property is ignored for input type "number" and others which
+     * use RenderTextControlSingleLine as renderer which sets height of spin
+     * button in layout(). */
+    height: 1.5em;
+    vertical-align: top;
+    -webkit-flex: none;
+    -webkit-user-select: none;
+    -webkit-user-modify: read-only !important;
+}
+input::-webkit-calendar-picker-indicator {
+    display: inline-block;
+    width: 0.66em;
+    height: 0.66em;
+    padding: 0.17em 0.34em;
+    -webkit-user-modify: read-only !important;
+}
+
+input::-webkit-calendar-picker-indicator:hover {
+    background-color: #eee;
 }
 
 .winner-board p {
@@ -196,11 +309,10 @@ h1, h2, h3, h4, h5, h6 {
     margin: 2em 0;
 
     &--cloud {
-        background: white;
-        margin: 2em 0 -2em 0;
+        background: none;
+        margin: 2em 0 6em 0;
         border-radius: 0 0 0 150%;
         min-height: auto;
-        box-shadow: 0 2em 30em rgba(255, 255, 255, 0.8);
     }
 
     &::before {
@@ -220,9 +332,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     &--cloud::before {
-        box-shadow: none;
-        transform: none;
-        background: #fff;
+        display: none;
     }
 
 
@@ -230,6 +340,7 @@ h1, h2, h3, h4, h5, h6 {
         h1 {
             text-align: left;
         }
+
         background: white;
         max-width: 50vw;
         padding: 1.25em 2.5em;
@@ -238,8 +349,14 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     &--cloud .content {
+        background: none;
         min-height: none;
         box-shadow: none;
+        padding: 0;
+
+        h1 {
+            text-align: center;
+        }
     }
 
     &:nth-child(odd) {
@@ -251,7 +368,7 @@ h1, h2, h3, h4, h5, h6 {
 
     &--cloud:nth-child(odd)::before {
         transform: none;
-        background: #fff;
+        background: none;
     }
 
     @media(min-width: 60em) {
@@ -537,6 +654,7 @@ button {
 
     input {
         width: 100%;
+        min-width: 92%;
         text-align: center;
         background: #fff;
         padding: .5em 0;

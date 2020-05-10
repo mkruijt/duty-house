@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "parcel": "^1.12.4"
+    "parcel": "^1.12.4",
+    "posthtml-modules": "^0.6.0"
   },
   "dependencies": {
     "@ideabile/util-google-auth": "^1.0.0",
