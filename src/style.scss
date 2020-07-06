@@ -430,9 +430,8 @@ th {
 
 th,
 td {
-
-    &:nth-child(2) {
-        width: 100%;
+     &:nth-child(2) {
+            width: 40%;
     }
     text-align: left;
     padding: 0.5em 1em;

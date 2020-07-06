@@ -21,7 +21,7 @@ export const AddActivityFormComponent = ({ sheet: { users, tasks }, onCancel, on
         <select ref={task}>
             {tasks.map(u => <option key={u[0]} value={u[0]}>{u[0]} {u[1]}</option>)}
         </select>
-        <input ref={when} type="datetime-local" defaultValue={new Date().toISOString().substring(0, 16)} />
+        <input ref={when} type="datetime-local" defaultValue={new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000).toISOString().substring(0, 16)} />
         <div>
             <button className="btn btn--small red" onClick={() => onCancel()}>Cancel</button>
             <button className="btn btn--small cyan" onClick={() => onCreate([when.current.value, task.current.value, user.current.value])}>Add</button>

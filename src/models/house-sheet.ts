@@ -44,8 +44,8 @@ export class HouseSpreadsheet {
 
     public getActivitiesThisWeek() {
         const today = new Date();
-        const start = startOfWeek(today);
-        const end = endOfWeek(today);
+        const start = startOfWeek(today, { weekStartsOn: 1 });
+        const end = endOfWeek(today, { weekStartsOn: 1 });
         return this.activities.filter(a => isWithinInterval(new Date(a[0]), { start, end }));
     }
 
@@ -202,7 +202,7 @@ export class HouseSpreadsheet {
                             values: this.tasks
                         },
                     ],
-                }).then(function(response) {
+                }).then(function (response) {
                     resolve(response);
                 }, (response) => reject('Error: ' + response.result.error.message));
             }, err => reject(err));

@@ -1,3 +1,5 @@
+npx parcel index.html
+
 
 * The user flow
 - TODO: The user enter and can already see a demo of existing sheet

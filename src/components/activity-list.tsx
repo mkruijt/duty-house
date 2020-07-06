@@ -19,7 +19,7 @@ export const ActivityListComponent = ({ sheet: { activities } }: { sheet: HouseS
                     <td>{u[1]}</td>
                     <td>{u[2]}</td>
                 </tr>;
-            })}
+            }).reverse()}
         </tbody>
     </table>
 </div>;
